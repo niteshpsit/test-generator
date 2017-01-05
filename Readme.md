@@ -45,3 +45,11 @@ testGenerator(config , (error, info)=>{
         endpoint: 'http://www.test.com/login',
         loginData: Object or data to pass for login api
     }
+
+##Dependecies
+ 
+    No Dependecies
+
+##Requirements
+
+    node js  6.3.1 or latest
