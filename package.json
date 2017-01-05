@@ -1,0 +1,19 @@
+{
+  "name": "test-generator",
+  "version": "1.0.0",
+  "description": "Generate test cases for RESTful APIs",
+  "main": "test-generator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niteshpsit/test-generator.git"
+  },
+  "author": "Nitesh Jatav <niteshpsit@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/niteshpsit/test-generator/issues"
+  },
+  "homepage": "https://github.com/niteshpsit/test-generator#readme"
+}
