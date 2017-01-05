@@ -18,7 +18,7 @@ config = {
     httpMethod: 'get', // http method 
     expectedRes: { name: "expected name" }, // expected response of api
     strictCheck: true, // true to deep check response otherwise false
-    testFile: 'test.js', // file name to write test cases
+    testFile: __dirname +'/test.js', // Absolute path , file name to write test cases. It should be unique for each api otherwise it will override the test cases
     loginCred: { // only for token based api
         session: 'token', // session type for now session
         key: 'eccess-token', // Your key name in header to pass token to call API

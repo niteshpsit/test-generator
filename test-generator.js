@@ -131,7 +131,7 @@ function isJsFile(filepath = '') {
 function writeToFile(testFile, content, callback) {
     if (!isJsFile(testFile))
         return callback(errorMsg['testFile'], null)
-    testFile = __dirname + '/' + testFile
+    testFile = testFile
     fs.writeFile(testFile, content, 'utf-8');
     callback(null, testFile)
 }
