@@ -33,7 +33,7 @@ var key = null;`
  * @param { String } httpMethod endpoint method
  * @returns { String } template for test cases
  **/
-function getTestTemplate(endpoint, httpMethod = 'GET') {
+function getTestTemplate(endpoint, httpMethod = 'GET', apiType) {
     endpoint = JSON.stringify(endpoint)
     return `
 
@@ -43,8 +43,7 @@ describe('${httpMethod}: ${endpoint} API', function() {
     let body;
     before((done)=>{
         request
-		${httpMethods[httpMethod]}(${endpoint})
-        .set(key,token)
+		${httpMethods[httpMethod]}(${endpoint})${apiType === 'token' ? '.set(key,token)' : ''}
 		.end(function(err, res){
 			response = res;
             body = res.body;
@@ -88,7 +87,7 @@ describe('${httpMethod}: ${endpoint} API', function() {
 		})
     })
     ${getExpectTemp('isEqual', 'response.statusCode', 200)}
-    ${getExpectTemp('isNotNull','token')}
+    ${getExpectTemp('isNotNull', 'token')}
 })`
 }
 /**
@@ -351,6 +350,10 @@ function genTestCases(config, callback) {
         return callback(errorMsg['strictCheck'], null)
     if (testFile !== undefined && typeof testFile !== 'string')
         return callback(errorMsg['testFile'], null)
+    /**
+     * Api type
+     **/
+    let apiType
     /** 
      * Get Dependencies
      **/
@@ -360,6 +363,7 @@ function genTestCases(config, callback) {
      **/
     if (loginCred && loginCred instanceof Object && !(loginCred instanceof Array)) {
         if (loginCred.session == 'token' || loginCred.session == 'session') {
+            apiType = loginCred.session
             /**
              * Code Get executed when if API is token based authentication
              **/
@@ -376,13 +380,13 @@ function genTestCases(config, callback) {
             /**
              * For returing an error 
             **/
-           return callback(errorMsg.loginDetail, null)
+            return callback(errorMsg.loginDetail, null)
         }
     }
     /** 
      * Get Template 
     **/
-    testContent += getTestTemplate(endpoint, httpMethod)
+    testContent += getTestTemplate(endpoint, httpMethod, apiType)
     /** 
      * common testcases for all apis irrespective of api's response
     */
