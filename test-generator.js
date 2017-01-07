@@ -23,7 +23,7 @@ function getDependencies() {
     return `var chai = require('chai');
 var expect = chai.expect;
 var assert = chai.assert;
-var request = require('superagent');
+var request = require('superagent').agent();
 var token = null;
 var key = null;`
 }
@@ -66,28 +66,27 @@ function getCloseBrases() {
  * @param { Object } loginCred containing endpoint , key , session type and loginData object 
  * @returns { String } template for test cases
 **/
-function getTokenApi(endpoint, httpMethod = 'POST', loginCred) {
+function getTokenApi(endpoint, httpMethod = 'POST', loginCred, apiType) {
     endpoint = JSON.stringify(endpoint)
     let loginData = JSON.stringify(loginCred.loginData)
-    let key = JSON.stringify(loginCred.key)
+    let key = apiType === 'token' ? JSON.stringify(loginCred.key) : ''
     return `
 
 describe('${httpMethod}: ${endpoint} API', function() {
-    key = ${key}
+    ${ apiType === 'token' ? `key = ${key}` : ''}
     let response;
-    let body;
     before((done)=>{
         request
 		${httpMethods[httpMethod]}(${endpoint})
         .send(${loginData})
 		.end(function(err, res){
 			response = res;
-            token = response.headers[key] || response.body[key] ;
+            ${ apiType === 'token' ? 'token = response.headers[key] || response.body[key];' : ''}
 			done();
 		})
     })
     ${getExpectTemp('isEqual', 'response.statusCode', 200)}
-    ${getExpectTemp('isNotNull', 'token')}
+    ${ apiType === 'token' ? `${getExpectTemp('isNotNull', 'token')}` : ''}
 })`
 }
 /**
@@ -362,19 +361,17 @@ function genTestCases(config, callback) {
      * check for provite apis
      **/
     if (loginCred && loginCred instanceof Object && !(loginCred instanceof Array)) {
-        if (loginCred.session == 'token' || loginCred.session == 'session') {
+        if (loginCred.session == 'token' || loginCred.session == 'cookies') {
             apiType = loginCred.session
             /**
              * Code Get executed when if API is token based authentication
              **/
-            if (loginCred.session == 'token' && ('key' in loginCred)) {
-                testContent += getTokenApi(loginCred.endpoint, 'post', loginCred)
+            if (apiType === 'cookies' || (apiType === 'token' && ('key' in loginCred))) {
+                testContent += getTokenApi(loginCred.endpoint, 'post', loginCred, apiType)
+            } else {
+                return callback(errorMsg.loginDetail, null)
             }
-            else if (loginCred.session == 'cookies') {
-                /**
-                 * Need To Be Implement For Cookies Based APIs
-                 **/
-            }
+
         }
         else {
             /**
