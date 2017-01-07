@@ -31,10 +31,13 @@ var key = null;`
  * function To generate the descption for test
  * @param { String } endpoint to generate test cases
  * @param { String } httpMethod endpoint method
+ * @param { Object } api body payload
+ * @param { String } apiType api session type session or token
  * @returns { String } template for test cases
  **/
-function getTestTemplate(endpoint, httpMethod = 'GET', apiType) {
+function getTestTemplate(endpoint, httpMethod = 'GET', body, apiType) {
     endpoint = JSON.stringify(endpoint)
+    body = body && (body instanceof Object) ? JSON.stringify(body) : {}
     return `
 
 describe('${httpMethod}: ${endpoint} API', function() {
@@ -43,7 +46,7 @@ describe('${httpMethod}: ${endpoint} API', function() {
     let body;
     before((done)=>{
         request
-		${httpMethods[httpMethod]}(${endpoint})${apiType === 'token' ? '.set(key,token)' : ''}
+		${httpMethods[httpMethod]}(${endpoint})${ (httpMethod != "get" && httpMethod != "GET") ? `.send(${body})` : ''}${apiType === 'token' ? '.set(key,token)' : ''}
 		.end(function(err, res){
 			response = res;
             body = res.body;
@@ -315,11 +318,12 @@ function getTCForArray(testArray, compareKey = 'body') {
  *   endpoint: "http://www.test.com/tests",
  *   httpMethod: 'get'/'post....',
  *   expectedRes: { name: "expected name" },
+ *   body: {} // body to pass api { 'username': 'test', 'password': 'test' }  
  *   strictCheck: true/false,
  *   testFile: 'test.js',
  *   loginCred: {
- *      session: 'token',
- *      key: 'eccess-token',
+ *      session: 'token', // 'token' or 'cookies'
+ *      key: 'eccess-token',// only if session is token based
  *      endpoint: 'http://www.test.com/login',
  *      loginData: Object or data to pass login api
  *   }
@@ -328,17 +332,23 @@ function getTCForArray(testArray, compareKey = 'body') {
  * endpoint: api endpoint to test { must be String }
  * httpMethod: http method of api { must be String } 
  * expectedRes: expected response from api { Any type except undefined }
+ * body: data to pass api { Object }
  * strictCheck: If you want to check expectedRes check strictly( deep check ), provide true 
- * testFile: File name to write test { must be string with .js extension } 
- * loginCred: Define only when api is need authentication with token to check {
- *      session: 'token',
- *      key: 'eccess-token',
+ * testFile: File name to write test { must be string with .js extension }
+ * Define only when api is need authentication with 'token' or 'cookies' based  
+ * loginCred: {
+ *      session: 'token',// 'cookies' or 'token'
+ *      key: 'eccess-token', // your token key only if session is token based
  *      endpoint: 'http://www.test.com/login',
- *      loginData: Object or data to pass for login api
+ *      // Object or data to pass for login api
+ *      loginData: {
+ *          'password': 'test ',
+ *          'username': 'test'
+ *      }
  *   }
  **/
 function genTestCases(config, callback) {
-    const { endpoint, httpMethod, expectedRes, strictCheck, testFile, loginCred} = config
+    const { endpoint, httpMethod, expectedRes, body, strictCheck, testFile, loginCred} = config
     if (!endpoint || (typeof endpoint !== 'string'))
         return callback(errorMsg['endpoint'], null)
     if (!httpMethod || (typeof httpMethod !== 'string'))
@@ -383,7 +393,7 @@ function genTestCases(config, callback) {
     /** 
      * Get Template 
     **/
-    testContent += getTestTemplate(endpoint, httpMethod, apiType)
+    testContent += getTestTemplate(endpoint, httpMethod, body, apiType)
     /** 
      * common testcases for all apis irrespective of api's response
     */
