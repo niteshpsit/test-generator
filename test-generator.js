@@ -332,7 +332,7 @@ function getTCForArray(testArray, compareKey = 'body') {
  * endpoint: api endpoint to test { must be String }
  * httpMethod: http method of api { must be String } 
  * expectedRes: expected response from api { Any type except undefined }
- * body: data to pass api { Object }
+ * body: data to pass to the api { Object }
  * strictCheck: If you want to check expectedRes check strictly( deep check ), provide true 
  * testFile: File name to write test { must be string with .js extension }
  * Define only when api is need authentication with 'token' or 'cookies' based  

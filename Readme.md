@@ -1,7 +1,7 @@
 
-## Test Cases Generator For RESTful APIS or node apis 
+## Test Cases Generator For RESTful APIS or node apis , token or cookies based
 
-     Simple to generate node test cases for public and token based api within 1 minute
+    Simplest way generate test cases for 'public' or 'token' or 'cookies' based api  within one minute
 
 ## Installation
 
@@ -20,11 +20,13 @@ config = {
     endpoint: "http://www.test.com/tests", // endpoint to generate test cases
     httpMethod: 'get', // http method 
     expectedRes: { name: "expected name" }, // expected response of api
+    body: {} // body to pass to the api { 'username': 'test', 'password': 'test' } 
     strictCheck: true, // true to deep check response otherwise false
     testFile: __dirname +'/testfile.js', // Absolute path , file name to write test cases. It should be unique for each api otherwise it will override the test cases
-    loginCred: { // only for token based api
-        session: 'token', // session type for now token
-        key: 'eccess-token', // Your key name in header to pass token to call API
+    // loginCred pass only if api is need  authentication based or 'token' or 'cookies'
+    loginCred: {
+        session: 'token', // 'token' or 'cookies'
+        key: 'eccess-token', // your token key only if session is token based
         endpoint: 'http://www.test.com/login', // endpoint point to login
         loginData: { username: 'test', password: 'test'} // login credentials for login
     }
@@ -43,11 +45,13 @@ testGenerator(config , (error, info)=>{
     endpoint: api endpoint to test { must be String }
     httpMethod: http method of api { must be String } 
     expectedRes: expected response from api { Any type except undefined }
+    body: data to pass to the api { Object }
     strictCheck: If you want to check expectedRes check strictly( deep check ), provide true 
     testFile: File name to write test { must be string with .js extension } 
-    loginCred: Define only when api is need authentication with token to check {
-        session: 'token',
-        key: 'eccess-token',
+    Define only when api is need authentication with 'token' or 'cookies' based
+    loginCred: {
+        session: 'token',// 'cookies' or 'token'
+        key: 'eccess-token',// your token key only if session is token based
         endpoint: 'http://www.test.com/login',
         loginData: Object or data to pass for login api
     }
