@@ -7,9 +7,6 @@
 
 ```bash
 $ npm install test-generator --save
-$ npm install mocha --save
-$ npm install superagent --save
-$ npm install chai --save
 ```
 
 ## Quick start 
@@ -20,7 +17,7 @@ config = {
     endpoint: "http://www.test.com/tests", // endpoint to generate test cases
     httpMethod: 'get', // http method 
     expectedRes: { name: "expected name" }, // expected response of api
-    body: {} // body to pass to the api { 'username': 'test', 'password': 'test' } 
+    body: {}, // body to pass to the api { 'username': 'test', 'password': 'test' } 
     strictCheck: true, // true to deep check response otherwise false
     testFile: __dirname +'/testfile.js', // Absolute path , file name to write test cases. It should be unique for each api otherwise it will override the test cases
     // loginCred pass only if api is need  authentication based or 'token' or 'cookies'
@@ -58,6 +55,9 @@ testGenerator(config , (error, info)=>{
 
 ##To Run Test Cases
 ```bash
+$ npm install mocha --save
+$ npm install superagent --save
+$ npm install chai --save
 $ mocha test
 ```
 ##Note
