@@ -133,8 +133,7 @@ function writeToFile(testFile, content, callback) {
     if (!isJsFile(testFile))
         return callback(errorMsg['testFile'], null)
     testFile = testFile
-    fs.writeFile(testFile, content, 'utf-8');
-    callback(null, testFile)
+    fs.writeFile(testFile, content, 'utf-8', callback);
 }
 /**
  * @param { String } type test case to be done
